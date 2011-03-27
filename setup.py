@@ -4,7 +4,7 @@
 """
 Generic extension system.
 
-Copyright (C) 2009 Florian Léger
+Copyright (C) 2009, 2011 Florian Léger
 
 Setup script.
 
@@ -26,9 +26,9 @@ License
 
 __author__ = "Florian Léger"
 __license__ = "GPLv3"
-__version__ = "1.0.0"
-__date__ = "04/10/2009"
-__copyright__ = "2009 Florian Léger"
+__version__ = "1.0.1"
+__date__ = "27/03/2011"
+__copyright__ = "2009, 2011 Florian Léger"
 
 from distutils.core import setup
 
@@ -36,11 +36,12 @@ setup(name = "pyAutoExtension",
     version = __version__,
     description = "Generic extension system.",
     author = __author__,
-    author_email = "florian.leger@insa-rouen.fr",
-    url = "http://asi.insa-rouen.fr/etudiants/~fleger",
+    author_email = "florian6.leger@laposte.net",
+    url = "https://github.com/fleger/pyAutoExtension",
     platforms = ['any'],
 
     license = __license__,
+    use_2to3 = True,
 
     package_dir = {'autoextension': 'autoextension'},
     packages = ['autoextension'],

@@ -34,8 +34,9 @@ Mini how-to
 
 License
 =======
-    subDownloader - A subtitle downloader
-    Copyright (C) 2009 Florian Léger
+    Generic extension system.
+
+    Copyright (C) 2009, 2011 Florian Léger
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,9 +55,9 @@ License
 
 __author__ = "Florian Léger"
 __license__ = "GPLv3"
-__copyright__ = "2009 Florian Léger"
-__url__ = "http://asi.insa-rouen.fr/etudiants/~fleger"
-__version__ = "1.0.0"
+__copyright__ = "2009, 2011 Florian Léger"
+__url__ = "https://github.com/fleger/pyAutoExtension"
+__version__ = "1.0.1"
 
 from glob import iglob
 import os.path
