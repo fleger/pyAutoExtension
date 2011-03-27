@@ -1,0 +1,10 @@
+Installation
+============
+
+The installation process requires that you have Python.
+Depending on your distro's Python packaging you may also
+need a package called python-dev or python-devel.
+
+To install, run the command
+
+    ./setup.py install [--prefix=...]

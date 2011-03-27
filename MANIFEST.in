@@ -1,0 +1,4 @@
+include CHANGELOG
+include COPYING
+include INSTALL
+include MANIFEST.in
