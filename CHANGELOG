@@ -1,5 +1,6 @@
-1.0.1
-Add 2to3 fixer to setup.py
+1.1.0
+New BaseExtensionClass. Now the user can make his own ExtensionClass inheriting from both a custom metaclass (ABCMeta for instance) and BaseExtensionClass.
+Add 2to3 fixer to setup.py. Now compatible with Python 3.
 
 1.0.0
 Initial public release

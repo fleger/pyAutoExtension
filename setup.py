@@ -26,8 +26,8 @@ License
 
 __author__ = "Florian Léger"
 __license__ = "GPLv3"
-__version__ = "1.0.1"
-__date__ = "27/03/2011"
+__version__ = "1.1.0"
+__date__ = "28/03/2011"
 __copyright__ = "2009, 2011 Florian Léger"
 
 from distutils.core import setup

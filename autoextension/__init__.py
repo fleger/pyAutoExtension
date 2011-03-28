@@ -19,18 +19,50 @@ Mini how-to
   >>> class MyExtensionClass(ExtensionClass):
   ...   extensionPolicy = NameBasedBlackListExtensionPolicy("")      # Ignore all the classes whose name is an empty string
   ...
-  >>> class MyAbstractExtension(object):
+  >>> class MyExtension1(object):
   ...   __metaclass__ = MyExtensionClass
-  ...   name = ""
-  ...
-  >>> class MyExtension1(MyAbstractExtension):
   ...   name = "MyExtension1"
   ...
-  >>> class MyExtension2(MyAbstractExtension):
+  >>> class MyExtension2(object):
+  ...   __metaclass__ = MyExtensionClass
   ...   name = "MyExtension2"
   ...
   >>> print(sorted([Extension.name for Extension in MyExtensionClass.getAvailableExtensions()]))
   ['MyExtension1', 'MyExtension2']
+
+  >>> # Using an existing metaclass (e. g.: ABCMeta)
+  >>> import abc
+  >>> class ABCMetaExtensionClass(abc.ABCMeta, BaseExtensionClass):
+  ...   def __new__(mcls, name, bases, namespace):
+  ...     return mcls._new(name, bases, namespace, abc.ABCMeta)
+  ...
+  >>> class MyOtherExtensionClass(ABCMetaExtensionClass):
+  ...   extensionPolicy = NameBasedBlackListExtensionPolicy("")
+  ...
+  >>> class MyOtherAbstractExtension(object):
+  ...   __metaclass__ = MyOtherExtensionClass
+  ...   name = ""
+  ...   
+  ...   @abc.abstractmethod
+  ...   def foo(self): pass
+  ...
+  >>> class MyOtherExtension1(MyOtherAbstractExtension):
+  ...   name = "MyOtherExtension1"
+  ...   
+  ...   def foo(self): print("Hello")
+  ...
+  >>> class MyOtherExtension2(MyOtherAbstractExtension):
+  ...   name = "MyOtherExtension2"
+  ...
+  ...   def foo(self): print("World")
+  ...
+  >>> print(sorted([Extension.name for Extension in MyOtherExtensionClass.getAvailableExtensions()]))
+  ['MyOtherExtension1', 'MyOtherExtension2']
+  >>> m = MyOtherAbstractExtension()
+  Traceback (most recent call last):
+    ...
+  TypeError: Can't instantiate abstract class MyOtherAbstractExtension with abstract methods foo
+  >>> m1 = MyOtherExtension1()
 
 License
 =======
@@ -57,7 +89,7 @@ __author__ = "Florian Léger"
 __license__ = "GPLv3"
 __copyright__ = "2009, 2011 Florian Léger"
 __url__ = "https://github.com/fleger/pyAutoExtension"
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 from glob import iglob
 import os.path
@@ -253,14 +285,15 @@ The default extension policy used when a new extension class is created.
 
 class _MetaExtensionClass(type):
   """
-  Metaclass of the extension classes.
+  Metaclass for the extension classes.
 
   For internal use.
   """
-  def __new__(cls, name, bases, namespace):
+  
+  def __new__(mcls, name, bases, namespace):
     if "extensionPolicy" not in namespace:
       namespace["extensionPolicy"] = DefaultExtensionPolicy()
-    return type.__new__(cls, name, bases, namespace)
+    return type.__new__(mcls, name, bases, namespace)
 
   def __init__(self, name, bases, namespace):
     type.__init__(self, name, bases, namespace)
@@ -274,31 +307,30 @@ class _MetaExtensionClass(type):
     return self.__availableExtensions
 
 
-class ExtensionClass(type):
+class BaseExtensionClass(object):
     """
-    Metaclass for the extensions.
+    Base class for the extension metaclasses.
 
-    Allows to keep tracks of each declared extension.
-
-    @note: All the classes that have an extension class as metaclass must have a class attribute called name. This is the name of the extension. It's value must be unique within the same class of extensions.
+    Should not be used directly.
     """
 
     __metaclass__ = _MetaExtensionClass
 
-    def __new__(cls, name, bases, namespace):
+    @classmethod
+    def _new(mcls, name, bases, namespace, supermcls):
       """
       Creates a new extension class.
       """
       if "name" in namespace:
-        if cls.extensionPolicy(name, bases, namespace):
-          if namespace["name"] not in cls._availableExtensions:
-            extension = type.__new__(cls, name, bases, namespace)
-            cls._availableExtensions[namespace["name"]] = extension
+        if mcls.extensionPolicy(name, bases, namespace):
+          if namespace["name"] not in mcls._availableExtensions:
+            extension = supermcls.__new__(mcls, name, bases, namespace)
+            mcls._availableExtensions[namespace["name"]] = extension
             return extension
           else:
-            raise ExtensionNameAlreadyExistsError, "An extension named %s already exists at %s." %(namespace["name"], cls._availableExtensions[namespace["name"]])
+            raise ExtensionNameAlreadyExistsError, "An extension named %s already exists at %s." %(namespace["name"], mcls._availableExtensions[namespace["name"]])
         else:
-          return type.__new__(cls, name, bases, namespace)
+          return supermcls.__new__(mcls, name, bases, namespace)
       else:
         raise ExtensionNameError, "%s has no name." %name
 
@@ -311,6 +343,19 @@ class ExtensionClass(type):
       @return:    A tuple containing all the declared extension classes.
       """
       return tuple(cls._availableExtensions.values())
+
+
+class ExtensionClass(type, BaseExtensionClass):
+  """
+  Metaclass for the extensions.
+
+  Allows to keep tracks of each declared extension.
+
+  @note: All the classes that have an extension class as metaclass must have a class attribute called name. This is the name of the extension. It's value must be unique within the same class of extensions.
+  """
+
+  def __new__(mcls, name, bases, namespace):
+    return mcls._new(name, bases, namespace, type)
 
 
 DEFAULT_EXTENSION_PATTERN = "[!_]*.py"
