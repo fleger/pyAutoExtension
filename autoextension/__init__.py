@@ -89,7 +89,7 @@ __author__ = "Florian Léger"
 __license__ = "GPLv3"
 __copyright__ = "2009, 2011 Florian Léger"
 __url__ = "https://github.com/fleger/pyAutoExtension"
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 from glob import iglob
 import os.path

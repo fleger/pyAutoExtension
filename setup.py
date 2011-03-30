@@ -26,11 +26,11 @@ License
 
 __author__ = "Florian Léger"
 __license__ = "GPLv3"
-__version__ = "1.1.0"
-__date__ = "28/03/2011"
+__version__ = "1.1.1"
+__date__ = "30/03/2011"
 __copyright__ = "2009, 2011 Florian Léger"
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name = "pyAutoExtension",
   version = __version__,
